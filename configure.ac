@@ -21,17 +21,6 @@ AC_TYPE_SIZE_T
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([select strdup])
 
-AC_ARG_WITH(libpac, [  --with-libpac=DIR     libpac directory], [
-    if test "$withval" = "no"; then
-       AC_MSG_ERROR([libpac is not optional])
-    elif test "$withval" != "yes"; then
-        CFLAGS="$CFLAGS -I$withval/include"
-	LDFLAGS="$LDFLAGS -L$withval/lib"
-    fi    
-    ], [ac_libpac_path=default])
-AC_CHECK_LIB(pac, pac_find_proxy, [], [AC_MSG_ERROR([unable to find libpac])])
-
-
 case "$SWIARCH" in
     *-win32|*-win64)
         ;;

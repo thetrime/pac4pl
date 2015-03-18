@@ -1,14 +1,16 @@
-LIBS=	 @LDFLAGS@
-CFLAGS+= @CFLAGS@
+CFLAGS+= @CFLAGS@ -I. -I/opt/swipl-7.1.32/lib/swipl-7.1.32/include
+LIBS=@LDFLAGS@
 all: $(PACKSODIR)/pac4pl.$(SOEXT)
+
 
 check::
 install::
 clean:
-	rm -f c/pac4pl.o
+	rm -f c/pac4pl.o c/duktape.o c/util.o c/threadpool.o c/pac.o
 distclean: clean
 	rm -f $(SOBJ)
 
-$(PACKSODIR)/pac4pl.$(SOEXT): c/pac4pl.o
+$(PACKSODIR)/pac4pl.$(SOEXT): c/pac4pl.o c/duktape.o c/util.o c/threadpool.o c/pac.o
 	mkdir -p $(PACKSODIR)
-	$(LD) $(LDSOFLAGS) -o $@ $(SWISOLIB) $< $(LIBS)
+	echo "LD: $(LDFLAGS)" > /tmp/foo2.txt
+	$(LD) $(LDSOFLAGS) -o $@ $(SWISOLIB) c/pac4pl.o c/duktape.o c/util.o c/threadpool.o c/pac.o $(LIBS)
