@@ -1,0 +1,14 @@
+LIBS=	 @LDFLAGS@
+CFLAGS+= @CFLAGS@
+all: $(PACKSODIR)/pac4pl.$(SOEXT)
+
+check::
+install::
+clean:
+	rm -f c/pac4pl.o
+distclean: clean
+	rm -f $(SOBJ)
+
+$(PACKSODIR)/pac4pl.$(SOEXT): c/pac4pl.o
+	mkdir -p $(PACKSODIR)
+	$(LD) $(LDSOFLAGS) -o $@ $(SWISOLIB) $< $(LIBS)
