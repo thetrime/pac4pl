@@ -138,6 +138,19 @@ GConfClient* gconf_client = NULL;
 #define WORKING_BUFFER_SIZE 15000
 
 
+#ifdef WIN32
+const char* inet_ntop(int af, const void* src, char* dst, int cnt)
+{ 
+   struct sockaddr_in srcaddr;   
+   memset(&srcaddr, 0, sizeof(struct sockaddr_in));
+   memcpy(&(srcaddr.sin_addr), src, sizeof(srcaddr.sin_addr));   
+   srcaddr.sin_family = af;
+   if (WSAAddressToString((struct sockaddr*) &srcaddr, sizeof(struct sockaddr_in), 0, dst, (LPDWORD) &cnt) != 0)
+      return NULL;
+   return dst;
+}
+#endif
+
 foreign_t system_wpad_url(term_t wpad_url)
 {
 #ifdef WIN64     /* The 32-bit version of MingW is so badly broken that I just gave up.
