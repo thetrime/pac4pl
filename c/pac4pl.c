@@ -130,9 +130,9 @@ foreign_t pl_pac(term_t pacfile, term_t url, term_t host, term_t proxy)
 
 #if defined(WIN32)
 static int dhcp_initialized = 0;
-#elif defined(__GIO__)
+#elif defined(HAVE_GIO)
 GSettings* gio_client = NULL;
-#elif defined(__GCONF__)
+#elif defined(HAVE_GCONF)
 GConfClient* gconf_client = NULL;
 #endif
 #define WORKING_BUFFER_SIZE 15000
@@ -242,7 +242,7 @@ foreign_t system_wpad_url(term_t wpad_url)
    }
    CFRelease(config);
    return rc;
-#elif defined(__GCONF__)
+#elif defined(HAVE_GCONF)
    int rc = 0;
    GError* error;
    if (gconf_client)
@@ -258,7 +258,7 @@ foreign_t system_wpad_url(term_t wpad_url)
       }
    }
    return rc;
-#elif defined(__GIO__)
+#elif defined(HAVE_GIO)
    int rc = 0;
    gchar* value = g_settings_get_string(gio_client, "autoconfig-url");
    if (value)
@@ -419,9 +419,9 @@ install_t install()
    result = DhcpCApiInitialize(&version);
    if (result == 0)
       dhcp_initialized = 1;
-#elif defined(__GCONF__)
+#elif defined(HAVE_GCONF)
    gconf_client = gconf_client_get_default();
-#elif defined(__GIO__)
+#elif defined(HAVE_GIO)
    gio_client = g_settings_new("org.gnome.system.proxy");
 #endif      
    PL_register_foreign("c_pac", 4, pl_pac, 0);
