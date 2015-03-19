@@ -144,7 +144,6 @@ foreign_t system_wpad_url(term_t wpad_url)
    DWORD result;
    BYTE buffer[1000];
    DWORD size = sizeof(buffer);
-   DWORD version;
    DHCPCAPI_PARAMS option = { 0, 252, FALSE, 0, 0 };
    DHCPCAPI_PARAMS_ARRAY requestParams = { 1, &option };
    DHCPCAPI_PARAMS_ARRAY sendParams = { 0, NULL };
@@ -190,13 +189,19 @@ foreign_t system_wpad_url(term_t wpad_url)
 
    for (adapter = adapters; adapter; adapter = adapter->Next)
    {
+      WCHAR* adapter_name;
+      size_t adapter_name_len;
       /* Try this adapter */
       if (adapter->IfType == IF_TYPE_SOFTWARE_LOOPBACK) /* Unless it is a loopback */
          continue;
       if ((adapter->Flags & IP_ADAPTER_DHCP_ENABLED) == 0) /* Or it does not have DHCP enabled */
          continue;
       /* Most systems will have at most one such adapter. This implementation will stop on the first one that reports WPAD */
-      result = DhcpRequestParams(DHCPCAPI_REQUEST_SYNCHRONOUS, NULL, adapterName, NULL, sendParams, requestParams, buffer, &size, NULL);
+      adapter_name_len = MultiByteToWideChar(0, 0, adapter->AdapterName, -1, adapter_name, 0);
+      adapter_name = PL_malloc(adapter_name_len);
+      MultiByteToWideChar(0, 0, adapter->AdapterName, -1, adapter_name, adapter_name_len);
+      result = DhcpRequestParams(DHCPCAPI_REQUEST_SYNCHRONOUS, NULL, adapter_name, NULL, sendParams, requestParams, buffer, &size, NULL);
+      PL_free(adapter_name);
       if (result != ERROR_SUCCESS)  /* Keep looking? */
          continue;
       /* We have a result! */
@@ -394,6 +399,7 @@ install_t install()
 {
 #ifdef WIN32
    DWORD result;
+   DWORD version;
    result = DhcpCApiInitialize(&version);
    if (result == 0)
       dhcp_initialized = 1;
