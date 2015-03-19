@@ -3436,7 +3436,7 @@ done
 
 case "$SWIARCH" in
     *-win32|*-win64)
-        LDFLAGS=$LDFLAGS -ldhcpcsvc -liphlpapi"
+        LDFLAGS=$LDFLAGS -ldhcpcsvc -liphlpapi
         ;;
     *darwin*)
 	LDFLAGS="$LDFLAGS -framework CoreFoundation -framework SystemConfiguration"
