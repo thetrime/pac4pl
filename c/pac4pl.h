@@ -21,10 +21,10 @@
 #include <net/if_dl.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 #include <CoreFoundation/CoreFoundation.h>
-#endif
 #else    /* Non-BSD */
 #define AF_LINK AF_PACKET
 #include <sys/ioctl.h>
+#endif
 #endif
 #if defined(HAVE_GCONF)
 #include <gconf/gconf-client.h>
