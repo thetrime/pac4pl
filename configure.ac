@@ -23,7 +23,7 @@ AC_CHECK_FUNCS([select strdup])
 
 case "$SWIARCH" in
     *-win32|*-win64)
-        LDFLAGS="$LDFLAGS -ldhcpcsvc -liphlpapi"
+        LDFLAGS="$LDFLAGS -ldhcpcsvc -liphlpapi -lws2_32"
         ;;
     *darwin*)
 	LDFLAGS="$LDFLAGS -framework CoreFoundation -framework SystemConfiguration"
