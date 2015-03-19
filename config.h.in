@@ -1,6 +1,6 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Defined when GConf is detected */
+/* Define if we support gconf-based autostart */
 #undef HAVE_GCONF
 
 /* Define to 1 if you have the <inttypes.h> header file. */

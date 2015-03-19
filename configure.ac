@@ -31,12 +31,9 @@ case "$SWIARCH" in
 esac
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-AC_MSG_CHECKING(for GConf)
-if $PKG_CONFIG --exists gconf-2.0; then
-   AC_MSG_RESULT(yes)
-   AC_DEFINE([HAVE_GCONF], 1, [Defined when GConf is detected])
-else
-   AC_MSG_RESULT(no)
-fi
 
+PKG_CHECK_MODULES(GCONF, gconf-2.0, [have_gconf=yes], [have_gconf=no])
+if test x$have_gconf = xyes ; then
+        AC_DEFINE([HAVE_GCONF], [1], [Define if we support gconf-based autostart])
+fi
 AC_OUTPUT(Makefile)

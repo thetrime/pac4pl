@@ -15,16 +15,20 @@
 #include <sys/socket.h>
 #include <ifaddrs.h>
 #include <net/if.h>
-#include <net/if_dl.h>
 #include <netinet/in.h>
-#endif
-#if defined(__APPLE__)
+
+#if defined(__APPLE__) /* Really BSD? */
+#include <net/if_dl.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 #include <CoreFoundation/CoreFoundation.h>
 #endif
-#if defined(__GCONF__)
+#else    /* Non-BSD */
+#define AF_LINK AF_PACKET
+#include <sys/ioctl.h>
+#endif
+#if defined(HAVE_GCONF)
 #include <gconf/gconf-client.h>
-#elif defined (__GIO__)
+#elif defined (HAVE_GIO)
 /* ??? */
 #endif
 

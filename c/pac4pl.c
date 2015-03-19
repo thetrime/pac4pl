@@ -369,7 +369,17 @@ foreign_t enumerate_network_interfaces(term_t iflist)
          if (p->ifa_addr->sa_family == AF_LINK)
          {
             struct sockaddr_dl* addr = (struct sockaddr_dl*)p->ifa_addr;
+#ifdef __linux__
+            struct ifreq ifr;
+            int fd = socket(AF_INET, SOCK_DGRAM, 0);
+            ifr.ifr_addr.sa_family = AF_INET;
+            strcpy(ifr.ifr_name, p->ifa_name);
+            ioctl(fd, SIOCGIFHWADDR, &ifr);
+            close(fd);
+            char* link = reinterpret_cast<uint8_t*>(ifr.ifr_hwaddr.sa_data);
+#else
             char* link = LLADDR(addr);
+#endif
             if (!PL_unify_list(head, item, head))
                break;
             if (!PL_unify_term(item,
