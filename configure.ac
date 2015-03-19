@@ -23,10 +23,11 @@ AC_CHECK_FUNCS([select strdup])
 
 case "$SWIARCH" in
     *-win32|*-win64)
+        LDFLAGS=$LDFLAGS -ldhcpcsvc -liphlpapi"
         ;;
     *darwin*)
 	LDFLAGS="$LDFLAGS -framework CoreFoundation -framework SystemConfiguration"
-	;;
+	;;   
 esac
 
 AC_OUTPUT(Makefile)
