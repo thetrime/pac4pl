@@ -376,7 +376,7 @@ foreign_t enumerate_network_interfaces(term_t iflist)
             strcpy(ifr.ifr_name, p->ifa_name);
             ioctl(fd, SIOCGIFHWADDR, &ifr);
             close(fd);
-            char* link = reinterpret_cast<uint8_t*>(ifr.ifr_hwaddr.sa_data);
+            char* link = ifr.ifr_hwaddr.sa_data;
 #else
             char* link = LLADDR(addr);
 #endif
