@@ -140,7 +140,10 @@ GConfClient* gconf_client = NULL;
 
 foreign_t system_wpad_url(term_t wpad_url)
 {
-#ifdef WIN32
+#ifdef WIN64     /* The 32-bit version of MingW is so badly broken that I just gave up.
+                    It is missing inet_ntop and DhcpRequestParams in the libraries, which are
+                    fairly fundemantal. mingw-w64 is OK though
+                 */
    DWORD result;
    BYTE buffer[1000];
    DWORD size = sizeof(buffer);
