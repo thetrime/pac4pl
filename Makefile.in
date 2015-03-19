@@ -12,5 +12,4 @@ distclean: clean
 
 $(PACKSODIR)/pac4pl.$(SOEXT): c/pac4pl.o c/duktape.o c/util.o c/threadpool.o c/pac.o
 	mkdir -p $(PACKSODIR)
-	echo "LD: $(LDFLAGS)" > /tmp/foo2.txt
 	$(LD) $(LDSOFLAGS) -o $@ $(SWISOLIB) c/pac4pl.o c/duktape.o c/util.o c/threadpool.o c/pac.o $(LIBS)
