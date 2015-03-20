@@ -28,12 +28,26 @@ case "$SWIARCH" in
     *darwin*)
 	LDFLAGS="$LDFLAGS -framework CoreFoundation -framework SystemConfiguration"
 	;;   
+    *linux*)
+	CFLAGS="$CFLAGS -std=c99 -D_GNU_SOURCE -D_POSIX_C_SOURCE -D_DARWIN_C_SOURCE -D_XOPEN_SOURCE"
+	;;
 esac
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
 PKG_CHECK_MODULES(GCONF, gconf-2.0, [have_gconf=yes], [have_gconf=no])
 if test x$have_gconf = xyes ; then
-        AC_DEFINE([HAVE_GCONF], [1], [Define if we support gconf-based autostart])
+   	CFLAGS="$CFLAGS $GCONF_CFLAGS"
+   	LDFLAGS="$LDFLAGS $GCONF_LIBS"
+        AC_DEFINE([HAVE_GCONF], [1], [Define if we support gconf])
+fi
+
+PKG_CHECK_MODULES(GSETTINGS, gio-2.0, have_gsettings=yes, have_gsettings=no)
+if test x$have_gsettings = xyes ; then
+   	CFLAGS="$CFLAGS $GSETTINGS_CFLAGS"
+   	LDFLAGS="$LDFLAGS $GSETTINGS_LIBS"
+        AC_DEFINE([HAVE_GSETTINGS], [1], [Define if we support gsettings])
 fi
 AC_OUTPUT(Makefile)
+
+

@@ -130,9 +130,11 @@ foreign_t pl_pac(term_t pacfile, term_t url, term_t host, term_t proxy)
 
 #if defined(WIN32)
 static int dhcp_initialized = 0;
-#elif defined(HAVE_GIO)
+#endif
+#if defined(HAVE_GSETTINGS)
 GSettings* gio_client = NULL;
-#elif defined(HAVE_GCONF)
+#endif
+#if defined(HAVE_GCONF)
 GConfClient* gconf_client = NULL;
 #endif
 #define WORKING_BUFFER_SIZE 15000
@@ -153,6 +155,7 @@ const char* inet_ntop(int af, const void* src, char* dst, int cnt)
 
 foreign_t system_wpad_url(term_t wpad_url)
 {
+   int rc = 0;
 #ifdef WIN64     /* The 32-bit version of MingW is so badly broken that I just gave up.
                     It is missing inet_ntop and DhcpRequestParams in the libraries, which are
                     fairly fundemantal. mingw-w64 is OK though
@@ -227,8 +230,8 @@ foreign_t system_wpad_url(term_t wpad_url)
    /* None of the adapters had a DHCP lease from a server that has the WPAD URL */
    PL_free(adapters);
    PL_fail;
-#elif defined(__APPLE__)
-   int rc = 0;
+#endif
+#if defined(__APPLE__)
    CFDictionaryRef config = SCDynamicStoreCopyProxies(NULL);
    if (config)
    {
@@ -241,34 +244,35 @@ foreign_t system_wpad_url(term_t wpad_url)
       }
    }
    CFRelease(config);
-   return rc;
-#elif defined(HAVE_GCONF)
-   int rc = 0;
-   GError* error;
+#endif
+#if defined(HAVE_GCONF)
+   GError* error = NULL;
    if (gconf_client)
    {
       const char* key = "/system/proxy/autoconfig_url";
       gchar* value = gconf_client_get_string(gconf_client, key, &error);
-      if (HandleGError(error, key))
-         PL_fail;
-      if (value)
+      if (error != NULL)
+      {
+	 g_error_free(error);
+      }
+      else if (value)
       {
          rc = PL_unify_atom_chars(wpad_url, value);
          g_free(value);
+	 return rc;
       }
    }
-   return rc;
-#elif defined(HAVE_GIO)
-   int rc = 0;
+#endif
+#if defined(HAVE_GSETTINGS)
    gchar* value = g_settings_get_string(gio_client, "autoconfig-url");
    if (value)
    {
       rc = PL_unify_atom_chars(wpad_url, value);
       g_free(value);
+      return rc;
    }
-   return rc;
 #else
-   PL_fail;
+   return rc;
 #endif
 }
 
@@ -429,9 +433,19 @@ install_t install()
    result = DhcpCApiInitialize(&version);
    if (result == 0)
       dhcp_initialized = 1;
-#elif defined(HAVE_GCONF)
+#endif
+#if defined(HAVE_GCONF)
+   GError* error = NULL;
    gconf_client = gconf_client_get_default();
-#elif defined(HAVE_GIO)
+   gconf_client_add_dir(gconf_client, "/system/proxy",GCONF_CLIENT_PRELOAD_ONELEVEL, &error);
+   if (error != NULL) 
+   {
+      g_error_free(error);
+      g_object_unref(gconf_client);
+      gconf_client = NULL;
+   }
+#endif
+#if defined(HAVE_GSETTINGS)
    gio_client = g_settings_new("org.gnome.system.proxy");
 #endif      
    PL_register_foreign("c_pac", 4, pl_pac, 0);

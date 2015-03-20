@@ -1,3 +1,6 @@
+#include "../config.h"
+
+
 #include <SWI-Prolog.h>
 #include <string.h>
 #include <pac.h>
@@ -28,8 +31,9 @@
 #endif
 #if defined(HAVE_GCONF)
 #include <gconf/gconf-client.h>
-#elif defined (HAVE_GIO)
-/* ??? */
+#endif
+#if defined (HAVE_GSETTINGS)
+#include <gio/gio.h>
 #endif
 
 
